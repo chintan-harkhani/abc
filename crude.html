@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crude information</title>
+
+    <style>
+        .red {
+            text-align: center;
+            margin: 0 auto 30px auto;
+        }
+
+        .red tr td {
+            width: 600px;
+            font-size: 25px;
+        }
+
+        .red tr td input {
+            width: 99%;
+            font-size: 25px;
+        }
+    </style>
+</head>
+
+<body>
+    <table border="1" class="red">
+        
+           <input style="text-align: center; display: flex; margin: 0 150px; font-size: 25px; " type="hidden" id="id">
+        <tr>
+            <td>name :-</td>
+            <td>
+                <input type="text" id="name" />
+            </td>
+        </tr>
+        <tr>
+            <td>email :-</td>
+            <td>
+                <input type="email" id="email" />
+            </td>
+        </tr>
+        <tr>
+            <td>Phone No :-</td>
+            <td>
+                <input type="tel" id="phone" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="button" id="send" onclick="send()" value="Submit" />
+                <input type="button" id="update" onclick="edit()" value="Update" style="display: none;" />
+            </td>
+        </tr>
+    </table>
+    <table border="1">
+        <tr>
+            <td>Userid</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td>Phone no.</td>
+            <td colspan="2" style="text-align: center;">Action</td>
+        </tr>
+        
+        <tbody id="record">
+
+        </tbody>
+
+    </table>
+</body>
+
+</html>
+<script type="text/javascript">
+    let data = [];
+    viewdata();
+    let send = () => {
+        let name = document.getElementById('name').value;
+        let email = document.getElementById('email').value;
+        let phone = document.getElementById('phone').value;
+        let obj = {
+            userid :Math.floor(Math.random() * 1000),
+            username: name,
+            useremail: email,
+            userphone: phone
+        }
+        if(localStorage.getItem('data') === null || localStorage.getItem('data') === undefined){
+            data.push(obj);
+            localStorage.setItem('data', JSON.stringify(data));
+        }
+        else {
+            let val1 = JSON.parse(localStorage.getItem('data'));
+            val1.push(obj);
+            localStorage.setItem('data', JSON.stringify(val1));
+        }
+        alert("Record successfully insert");
+        document.getElementById('name').value = "";
+        document.getElementById('email').value = "";
+        document.getElementById('phone').value = "";
+        viewdata();
+    }
+    function viewdata() {
+        let v= JSON.parse(localStorage.getItem('data'));
+        let tbl = "";
+        for(let i in v){
+            tbl += `
+                        <tr>
+                            <td>${v[i].userid}</td>
+                            <td>${v[i].username}</td>
+                            <td>${v[i].useremail}</td>
+                            <td>${v[i].userphone}</td>
+                            <td><button onclick="delet(${v[i].userid})">Delete</button></td>
+                            <td><button onclick="update(${v[i].userid})">Update</button></td>
+                        </tr>
+`
+        };
+        document.getElementById('record').innerHTML = tbl;
+    }
+    const delet =(userid)=>{
+               let va = JSON.parse(localStorage.getItem('data'));
+
+               for(let i in va){
+                         if(va[i].userid == userid){
+                            va.splice(i,1);
+                         }
+                         localStorage.setItem('data',JSON.stringify(va));
+               } 
+               alert('record succesfully delete');
+               viewdata();
+     }
+    const update = (userid)=>{
+        document.getElementById('update').style.display="block";
+        document.getElementById('send').style.display="none";
+        let upd = JSON.parse(localStorage.getItem('data'));
+      for(let i in upd){
+          if(upd[i].userid===userid){
+                document.getElementById('id').value = upd[i].userid;
+                document.getElementById('name').value = upd[i].username;
+                document.getElementById('email').value = upd[i].useremail;
+                document.getElementById('phone').value = upd[i].userphone;
+          }    
+      }
+    }
+
+    const edit = ()=>{
+        let id = document.getElementById('id').value;
+        let name = document.getElementById('name').value;
+        let email = document.getElementById('email').value;
+        let phone = document.getElementById('phone').value;
+
+        let vals = JSON.parse(localStorage.getItem('data'));
+        
+        for(let  j in vals){
+            if(vals[j].userid == id){
+                vals[j].username  = name;
+                vals[j].useremail  = email;
+                vals[j].userphone  = phone;
+            }
+            localStorage.setItem('data',JSON.stringify(vals));
+        }
+        alert("Reocrd successfully update");
+        document.getElementById('id').value = "";
+        document.getElementById('name').value = "";
+        document.getElementById('email').value = "";
+        document.getElementById('phone').value = "";
+        document.getElementById('send').style.display = "block";
+        document.getElementById('update').style.display = "none";
+        viewdata();
+    }
+
+</script>
